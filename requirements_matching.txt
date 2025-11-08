@@ -1,0 +1,7 @@
+requests
+sentence-transformers
+numpy
+scikit-learn
+python-Levenshtein
+pandas
+tqdm

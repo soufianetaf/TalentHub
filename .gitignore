@@ -1,0 +1,32 @@
+# Fichier .gitignore à placer dans le dossier TalentHub/
+
+# 1. Dépendances Node.js (Toujours ignorer)
+/node_modules
+
+# 2. Fichiers de cache et de construction (Toujours ignorer)
+/dist
+.env
+.DS_Store
+
+# 3. Fichiers lourds générés par le pipeline Python (Source de vos 400 Mo)
+# ------------------------------------------------------------------------
+
+# Fichiers intermédiaires de matching:
+/matching_profiles/matching/prepared_data.json
+/matching_profiles/matching/prepared_data_with_embeddings.json
+
+# Modèle de Sentence-Transformers (téléchargé par embedding_creator.py)
+# Le modèle 'all-MiniLM-L6-v2' est volumineux (~90MB) et se télécharge dans le cache utilisateur.
+# Si vous avez un dossier local de cache pour le modèle, ajoutez-le ici:
+# Exemple (selon votre système):
+.cache/
+/models/
+
+# Fichiers bruts de scraping (ils peuvent être très volumineux)
+/matching_profiles/Collect_profiles/*.json
+/matching_profiles/Collect_profiles/*.csv
+
+# Répertoire de tests et de cache Python (souvent inutiles)
+__pycache__/
+*.pyc
+venv/
