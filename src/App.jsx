@@ -1,12 +1,13 @@
 import React from 'react';
 import useTalentData from './hooks/useTalentData'; 
+import ExportMenu from './components/ExportMenu';
 import ProfileCard from './components/ProfileCard.jsx';
 import ProfileModal from './components/ProfileModal.jsx';
 import Pagination from './components/Pagination.jsx';
 import DarkModeToggle from './components/DarkModeToggle.jsx';
 import { Users, Loader, ExternalLink, Search, Code, MapPin, Filter, Linkedin, Github, Twitter, Heart } from './components/Icons.jsx'; 
 
-// NOUVEAUX IMPORTS DES HOOKS ET COMPOSANTS
+// IMPORTS DES HOOKS ET COMPOSANTS
 import { useFavorites } from './hooks/useFavorites';
 import { useToast } from './hooks/useToast';
 import ToastContainer from './components/ToastContainer';
@@ -14,7 +15,7 @@ import FavoritesPanel from './components/FavoritesPanel';
 
 const RecruitmentPlatform = () => {
     
-    // GESTION LOCALE DU DARK MODE POUR PLUS DE FIABILITÉ
+    // GESTION LOCALE DU DARK MODE
     const [darkMode, setDarkMode] = React.useState(false);
 
     const {
@@ -27,7 +28,7 @@ const RecruitmentPlatform = () => {
 
     const [selectedProfile, setSelectedProfile] = React.useState(null);
 
-    // NOUVEAUX HOOKS POUR LES FAVORIS ET NOTIFICATIONS
+    // HOOKS POUR LES FAVORIS ET NOTIFICATIONS
     const { 
         favorites, 
         toggleFavorite, 
@@ -39,18 +40,17 @@ const RecruitmentPlatform = () => {
     
     const [showFavorites, setShowFavorites] = React.useState(false); 
     
-    // NOUVELLE LOGIQUE : Fonction pour gérer les favoris avec notifications
+    // Fonction pour gérer les favoris avec notifications
     const handleToggleFavorite = (profile) => {
         const wasFavorite = isFavorite(profile);
         toggleFavorite(profile);
         
         if (wasFavorite) {
-            toast.info(`❌ Retiré: ${profile.nom || 'Profil'}`);
+            toast.info(`❌ Retiré des favoris`);
         } else {
-            toast.success(`❤️ Ajouté: ${profile.nom || 'Profil'}`);
+            toast.success(`❤️ Ajouté aux favoris`);
         }
     };
-
 
     if (loading) {
         return (
@@ -110,7 +110,6 @@ const RecruitmentPlatform = () => {
         <div className={`min-h-screen ${darkMode ? 'dark bg-gray-900' : 'bg-gradient-to-br from-gray-50 to-blue-50' } transition-colors duration-300`}>
             <header className="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-40 border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
                 <div className="max-w-7xl mx-auto px-4 py-6">
-                    {/* OPTIMISATION RESPONSIVE : Ajout de flex-wrap pour les petits écrans */}
                     <div className="flex items-center justify-between flex-wrap gap-4">
                         <div className="flex items-center gap-4">
                             <div className="bg-gradient-to-br from-indigo-600 to-purple-600 p-3 rounded-xl shadow-lg">
@@ -121,9 +120,11 @@ const RecruitmentPlatform = () => {
                                 <p className="text-sm text-gray-600 dark:text-gray-400 font-medium">Plateforme de Recrutement Cross-Platform</p>
                             </div>
                         </div>
-                        <div className="flex items-center gap-6">
+                        
+                        {/* BLOC D'ACTIONS : Favoris + Export + Dark Mode + Stats */}
+                        <div className="flex items-center gap-3 flex-wrap">
                             
-                            {/* NOUVEAU BLOC : BADGE FAVORIS */}
+                            {/* BADGE FAVORIS */}
                             <button
                                 onClick={() => setShowFavorites(true)}
                                 className="relative p-3 bg-gradient-to-br from-red-50 to-pink-50 dark:from-red-900/30 dark:to-pink-900/30 rounded-xl hover:shadow-lg transition-all border border-red-100 dark:border-red-800"
@@ -136,11 +137,20 @@ const RecruitmentPlatform = () => {
                                     </span>
                                 )}
                             </button>
-                            {/* FIN NOUVEAU BLOC */}
 
-                            {/* AJOUT DU DARK MODE TOGGLE */}
+                            {/* MENU EXPORT - UNIQUEMENT LES FAVORIS */}
+                            {favoritesCount > 0 && (
+                                <ExportMenu 
+                                    profiles={favorites}
+                                    getLinkedInData={getLinkedInData}
+                                    toast={toast}
+                                />
+                            )}
+                            
+                            {/* DARK MODE TOGGLE */}
                             <DarkModeToggle darkMode={darkMode} setDarkMode={setDarkMode} />
                             
+                            {/* STATS TOTALES */}
                             <div className="text-right bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/30 dark:to-purple-900/30 px-6 py-3 rounded-xl border border-indigo-100 dark:border-indigo-800">
                                 <p className="text-3xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">{allClusters.length}</p>
                                 <p className="text-xs text-gray-600 dark:text-gray-400 font-medium whitespace-nowrap">Profils Talents</p>
@@ -272,7 +282,6 @@ const RecruitmentPlatform = () => {
                                     getGitHubData={getGitHubData} 
                                     getTwitterData={getTwitterData}
                                     calculateProfileScore={calculateProfileScore}
-                                    // PROPS POUR LES FAVORIS
                                     onToggleFavorite={handleToggleFavorite} 
                                     isFavorite={isFavorite}
                                 />
@@ -330,23 +339,22 @@ const RecruitmentPlatform = () => {
                     getLinkedInData={getLinkedInData} 
                     getGitHubData={getGitHubData} 
                     getTwitterData={getTwitterData}
-                    // Logique de favoris pour le Modal
                     isFavorite={isFavorite}
                     onToggleFavorite={handleToggleFavorite}
                 />
             )}
 
-            {/* NOUVEAU BLOC : TOAST CONTAINER */}
+            {/* TOAST CONTAINER */}
             <ToastContainer toasts={toast.toasts} onRemove={toast.removeToast} />
 
-            {/* NOUVEAU BLOC : FAVORITES PANEL (tiroir latéral) */}
+            {/* FAVORITES PANEL */}
             {showFavorites && (
                 <FavoritesPanel
                     favorites={favorites}
                     onClose={() => setShowFavorites(false)}
                     onRemove={(profile) => {
                         toggleFavorite(profile);
-                        toast.info(`❌ Retiré: ${profile.nom || 'Profil'}`);
+                        toast.info(`❌ Retiré des favoris`);
                     }}
                     onClear={() => {
                         clearFavorites();

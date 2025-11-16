@@ -1,27 +1,29 @@
+// src/components/FavoritesPanel.jsx - Version avec Export
 import React from 'react';
-// Import correct de l'icône de fermeture
 import { XCircle, Trash2, Heart } from './Icons';
+import ExportMenu from './ExportMenu';
 
-export const FavoritesPanel = ({ 
+const FavoritesPanel = ({ 
   favorites, 
   onClose, 
   onRemove, 
   onClear, 
   onSelectProfile,
-  getLinkedInData 
+  getLinkedInData,
+  toast
 }) => {
-  // --- Affichage si AUCUN favori ---
   if (favorites.length === 0) {
     return (
       <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
         <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-md w-full p-12 text-center shadow-2xl animate-slideUp">
           <div className="bg-red-100 dark:bg-red-900/30 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
-            {/* L'icône Heart ici est correcte */}
             <Heart className="w-12 h-12 text-red-500" filled={false} />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-3">Aucun favori</h2>
           <p className="text-gray-600 dark:text-gray-400 mb-6">
             Vous n'avez pas encore ajouté de profils à vos favoris.
+            <br />
+            <span className="text-sm mt-2 block">Cliquez sur ❤️ sur une carte de profil pour l'ajouter.</span>
           </p>
           <button
             onClick={onClose}
@@ -34,7 +36,6 @@ export const FavoritesPanel = ({
     );
   }
 
-  // --- Affichage si favoris EXISTENT (Modal complet) ---
   return (
     <div className="fixed inset-0 bg-black bg-opacity-60 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-fadeIn">
       <div className="bg-white dark:bg-gray-800 rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden shadow-2xl animate-slideUp">
@@ -51,13 +52,19 @@ export const FavoritesPanel = ({
               </p>
             </div>
             <div className="flex items-center gap-2">
+              {/* Bouton Export dans le header du panneau */}
+              <ExportMenu 
+                profiles={favorites}
+                getLinkedInData={getLinkedInData}
+                toast={toast}
+              />
+              
               {favorites.length > 0 && (
                 <button
                   onClick={onClear}
                   className="p-2 hover:bg-white/20 rounded-full transition-colors"
                   title="Tout supprimer"
                 >
-                  {/* L'icône Trash2 est correcte */}
                   <Trash2 className="w-5 h-5" />
                 </button>
               )}
@@ -65,8 +72,7 @@ export const FavoritesPanel = ({
                 onClick={onClose}
                 className="p-2 hover:bg-white/20 rounded-full transition-colors"
               >
-                {/* CORRECTION ICI : Remplacer X par XCircle */}
-                <XCircle className="w-6 h-6" /> 
+                <XCircle className="w-6 h-6" />
               </button>
             </div>
           </div>
@@ -86,14 +92,14 @@ export const FavoritesPanel = ({
               return (
                 <div
                   key={idx}
-                  className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300 dark:hover:border-indigo-600"
+                  className="bg-gray-50 dark:bg-gray-700 rounded-xl p-4 hover:shadow-lg transition-all cursor-pointer border-2 border-transparent hover:border-indigo-300 dark:hover:border-indigo-600 group"
                   onClick={() => onSelectProfile(profile)}
                 >
                   <div className="flex items-start gap-4">
                     <img 
                       src={photo}
                       alt={fullName}
-                      className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-gray-600"
+                      className="w-16 h-16 rounded-full object-cover border-2 border-white dark:border-gray-600 group-hover:scale-105 transition-transform"
                       onError={(e) => e.target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(fullName)}&background=4F46E5&color=fff&size=80`}
                     />
                     <div className="flex-1 min-w-0">
@@ -120,8 +126,7 @@ export const FavoritesPanel = ({
                       className="p-2 hover:bg-red-100 dark:hover:bg-red-900/30 rounded-lg transition-colors text-red-500"
                       title="Retirer des favoris"
                     >
-                      {/* CORRECTION ICI : Remplacer X par XCircle */}
-                      <XCircle className="w-4 h-4" /> 
+                      <XCircle className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -132,9 +137,14 @@ export const FavoritesPanel = ({
 
         {/* Footer */}
         <div className="bg-gray-50 dark:bg-gray-900 p-4 flex justify-between items-center border-t border-gray-200 dark:border-gray-700">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
-            💡 <strong>Astuce:</strong> Cliquez sur un profil pour voir les détails
-          </p>
+          <div>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+               <strong>Astuce:</strong> Cliquez sur un profil pour voir les détails
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-1">
+               Utilisez le bouton "Exporter" pour télécharger vos favoris
+            </p>
+          </div>
           <button
             onClick={onClose}
             className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors font-medium"
