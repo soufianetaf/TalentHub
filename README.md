@@ -1,10 +1,12 @@
- TalentHub : Plateforme de Recrutement Cross-Platform
+# TalentHub : Plateforme de Recrutement Cross-Platform
 
 ## 🎯 Vue d'ensemble du Projet
 
-**TalentHub** est une plateforme modulaire conçue pour centraliser, unifier et exploiter les profils de talents provenant de sources hétérogènes comme **GitHub**, **LinkedIn**, et **Twitter**. L'objectif est de regrouper les fragments d'identité d'un candidat en un seul **profil enrichi (Cluster)**, en utilisant des techniques avancées de **Machine Learning (Embeddings sémantiques)** et de similarité textuelle.
+**TalentHub** est une plateforme modulaire de pointe conçue pour centraliser, unifier et exploiter les profils de talents provenant de sources hétérogènes telles que **GitHub**, **LinkedIn** et **Twitter**. 
 
-Cette approche permet aux recruteurs d'obtenir une vue complète et consolidée des compétences et de l'activité du talent pour une évaluation rapide et efficace.
+L'objectif principal est de regrouper les fragments d'identité numérique d'un candidat en un seul **profil enrichi (Cluster)**, en utilisant des techniques avancées de **Machine Learning** basées sur les embeddings sémantiques et la similarité textuelle.
+
+Cette approche innovante permet aux recruteurs d'obtenir une vue complète et consolidée des compétences, de l'activité et du potentiel d'un talent pour une évaluation rapide, précise et efficace.
 
 ---
 
@@ -12,146 +14,367 @@ Cette approche permet aux recruteurs d'obtenir une vue complète et consolidée 
 
 ### 1. Système de Matching (Backend Python)
 
-#### Technologies et Outils :
+#### Technologies et Outils
 
 - **Langage** : Python 3.x  
-  Pour les scripts de collecte, de prétraitement et de matching.
+  Scripts de collecte, prétraitement et matching des profils.
 
 - **Collecte des Données** :  
-  - **GitHub API**, **Apify**, **Google API** : Récupération des données brutes provenant de GitHub, LinkedIn et Twitter.
-  
+  - **GitHub API** : Récupération des profils et activités des développeurs
+  - **Apify** : Scraping LinkedIn et Twitter
+  - **Google API** : Sources complémentaires
+
 - **Traitement NLP / Machine Learning** :  
-  - **`sentence-transformers`**, **`scikit-learn`** : Création des vecteurs d'embeddings sémantiques pour une analyse approfondie des profils.  
-  - Modèle utilisé : **`all-MiniLM-L6-v2`** pour les embeddings de texte.
+  - **`sentence-transformers`** : Génération d'embeddings sémantiques
+  - **`scikit-learn`** : Calculs de similarité et clustering
+  - Modèle utilisé : **`all-MiniLM-L6-v2`** (embeddings de texte légers et performants)
 
 - **Logique de Matching** :  
-  - **Levenshtein** (distance d'édition)  
-  - **Similarité Cosinus** : Logique hybride pour le clustering des profils (à la fois déterministe et probabiliste).
+  - **Distance de Levenshtein** : Comparaison déterministe des chaînes de caractères
+  - **Similarité Cosinus** : Approche probabiliste pour le clustering sémantique
+  - Approche hybride combinant les deux méthodes pour une précision optimale
 
-#### Dépendances Python (`requirements_matching.txt`)
+#### Dépendances Python
+
+Créez un fichier `requirements_matching.txt` avec le contenu suivant :
 
 ```text
-requests
-sentence-transformers
-numpy
-scikit-learn
-python-Levenshtein
-pandas
-tqdm
+requests>=2.31.0
+sentence-transformers>=2.2.0
+numpy>=1.24.0
+scikit-learn>=1.3.0
+python-Levenshtein>=0.21.0
+pandas>=2.0.0
+tqdm>=4.65.0
+```
 
-## 2. Application Web (Frontend React)
-Technologies et Outils :
+**Installation** :
+```bash
+pip install -r requirements_matching.txt
+```
 
-Framework : React 18 pour le développement de l'interface utilisateur.
+---
 
-Bundler : Vite pour un environnement de développement rapide et un bundling optimisé.
+### 2. Application Web (Frontend React)
 
-Styling :
+#### Technologies et Outils
 
-Tailwind CSS, PostCSS pour un design moderne et responsive (avec prise en charge du Dark Mode).
+- **Framework** : React 18  
+  Développement d'une interface utilisateur moderne et réactive
 
-Dépendances Node.js (via package.json)
+- **Bundler** : Vite  
+  Environnement de développement ultra-rapide avec Hot Module Replacement (HMR)
+
+- **Styling** :  
+  - **Tailwind CSS** : Framework CSS utility-first
+  - **PostCSS** : Transformation CSS avancée
+  - Support natif du **Dark Mode**
+
+#### Dépendances Node.js
+
+**Installation complète** :
+```bash
 # Dépendances principales
 npm install react react-dom
 
-# Dépendances de développement (pour Vite/Tailwind)
+# Outils de développement
 npm install -D @vitejs/plugin-react autoprefixer postcss tailwindcss vite
 
-⚙️ Guide de Démarrage
-Partie A : Génération des Données (Backend)
-Préparation :
+# Dépendances additionnelles (si nécessaire)
+npm install lucide-react  # Icônes (optionnel)
+```
 
-Installez les dépendances Python listées ci-dessus via pip :
+---
 
+## ⚙️ Guide de Démarrage
+
+### Partie A : Génération des Données (Backend)
+
+#### 1. Préparation de l'environnement
+
+```bash
+# Créer un environnement virtuel Python (recommandé)
+python -m venv venv
+
+# Activer l'environnement virtuel
+# Sur Windows
+venv\Scripts\activate
+# Sur macOS/Linux
+source venv/bin/activate
+
+# Installer les dépendances
 pip install -r requirements_matching.txt
+```
 
+#### 2. Configuration des données sources
 
-Assurez-vous d'avoir les fichiers de données brutes collectées (ex : github_profiles_morocco.json, linkedin_profiles_apify.json, twitter_profiles_apify.json) dans le dossier matching_profiles/Collect_profiles/.
+Assurez-vous que les fichiers de données brutes collectées sont présents dans le dossier `matching_profiles/Collect_profiles/` :
+- `github_profiles_morocco.json`
+- `linkedin_profiles_apify.json`
+- `twitter_profiles_apify.json`
 
-Exécution du Pipeline :
+#### 3. Exécution du Pipeline de Matching
 
 Lancez le script orchestrateur pour générer le fichier de clusters final :
 
-python matching_profiles/matching/pipeline_orchestrator.py
+```bash
+python matching_profiles/matching/preprocessing.py
+python matching_profiles/matching/embedding_creator.py
+python matching_profiles/matching/matching_logic.py
+```
+
+**Étapes exécutées ** :
+1. ✅ Prétraitement et nettoyage des données
+2. ✅ Création des embeddings sémantiques
+3. ✅ Clustering et matching des profils
 
 
-Ce script exécutera les étapes suivantes :
+#### 4. Vérification
 
-Prétraitement des données
+Le fichier `public/clusters_3_plateformes.json` doit être créé avec succès. Ce fichier sera lu par le frontend.
 
-Création des embeddings
+---
 
-Clustering des profils
+### Partie B : Démarrage de l'Application Web (Frontend)
 
-Copie du fichier final vers public/clusters_3_plateformes.json
+#### 1. Installation des dépendances
 
-Partie B : Démarrage de l'Application Web (Frontend)
-Installation :
-
-Naviguez vers le dossier racine du projet (TalentHub/) et installez les dépendances Node.js :
-
+```bash
+# Depuis la racine du projet TalentHub/
 npm install
+```
 
-Démarrage :
+#### 2. Lancement en mode développement
 
-Lancez l'application en mode développement avec Vite :
-
+```bash
 npm run start
+# ou
+npm run dev
+```
 
+L'application sera accessible à l'adresse : **http://localhost:5173**
 
-L'application sera accessible dans votre navigateur à l'adresse : http://localhost:5173
+#### 3. Build pour la production
 
-✨ Fonctionnalités Clés de l'Application
+```bash
+npm run build
+```
 
-Recherche Avancée : Permet de filtrer les clusters par compétences (terme de recherche), nom, et localisation.
+Les fichiers optimisés seront générés dans le dossier `dist/`.
 
-Filtre de Qualité : Trie les profils selon le nombre de plateformes matchées (ex : "3 plateformes ⭐").
+---
 
-Système de Favoris : Ajoutez ou supprimez des profils de votre liste de favoris via le FavoritesPanel.
+## ✨ Fonctionnalités Clés
 
-Expérience Utilisateur :
+### 🔍 Recherche Avancée
+- Filtrage multi-critères : compétences, nom, localisation
+- Recherche en temps réel avec suggestions
 
-Intégration du Dark Mode pour un design moderne et ergonomique.
+### ⭐ Système de Notation
+- Tri des profils selon le nombre de plateformes matchées
+- Indicateur visuel de qualité : "3 plateformes ⭐"
 
-Système de notifications Toast pour améliorer l'interaction utilisateur.
+### ❤️ Gestion des Favoris
+- Ajout/suppression de profils favoris
+- Panneau dédié (`FavoritesPanel`) pour un accès rapide
 
-Statistiques : Affichage des totaux de profils unifiés pour une vue d'ensemble rapide.
+### 🎨 Expérience Utilisateur Premium
+- **Dark Mode** : Design moderne et ergonomique
+- **Notifications Toast** : Feedback instantané des actions
+- **Interface Responsive** : Compatible mobile, tablette et desktop
 
-📂 Structure du Projet
+### 📊 Statistiques en Temps Réel
+- Affichage du nombre total de profils unifiés
+- Métriques de matching par plateforme
+
+---
+
+## 📂 Structure du Projet
+
+```
 TalentHub/
-├── index.html                   # Point d'entrée de l'application frontend
-├── package.json                 # Dépendances et scripts Node.js pour le frontend
-├── vite.config.js               # Configuration Vite pour le bundling et le développement
+│
+├── index.html                          # Point d'entrée HTML
+├── package.json                        # Configuration npm
+├── vite.config.js                      # Configuration Vite
+├── tailwind.config.js                  # Configuration Tailwind CSS
+├── postcss.config.js                   # Configuration PostCSS
+├── README.md                           # Documentation (ce fichier)
 │
 ├── public/
-│   └── clusters_3_plateformes.json  # <-- Fichier d'entrée du Frontend
+│   └── clusters_3_plateformes.json     # ⚡ Données générées par le backend
 │
 ├── src/
-│   ├── components/              # Composants React : ProfileCard, ProfileModal, FavoritesPanel, etc.
-│   ├── hooks/                   # Logique métier : useTalentData, useFavorites, useToast
-│   └── App.jsx                  # Composant principal avec toute la logique de l'interface
+│   ├── App.jsx                         # Composant racine
+│   ├── main.jsx                        # Point d'entrée React
+│   ├── index.css                       # Styles globaux
+│   │
+│   ├── components/                     # Composants React
+│   │   ├── ProfileCard.jsx             # Carte de profil individuel
+│   │   ├── ProfileModal.jsx            # Modal de détails
+│   │   ├── FavoritesPanel.jsx          # Panneau des favoris
+│   │   ├── SearchBar.jsx               # Barre de recherche
+│   │   └── StatsBar.jsx                # Barre de statistiques
+│   │
+│   └── hooks/                          # Hooks personnalisés
+│       ├── useTalentData.js            # Gestion des données
+│       ├── useFavorites.js             # Logique des favoris
+│       └── useToast.js                 # Système de notifications
 │
 └── matching_profiles/
-    ├── Collect_profiles/        # Scripts de collecte des données depuis GitHub, LinkedIn, Twitter
-    │   ├── scraping_github.py  # Script de collecte des profils GitHub
-    │   └── ... (Autres scripts et données brutes)
     │
-    └── matching/                # Scripts de traitement des données pour la création des clusters
-        ├── preprocessing.py     # Nettoyage et normalisation des données
-        ├── embedding_creator.py # Création des vecteurs d'embeddings
-        ├── matching_logic.py    # Logique du clustering des profils
-        └── pipeline_orchestrator.py # Exécution du pipeline complet
+    ├── Collect_profiles/               # Scripts de collecte
+    │   ├── scraping_github.py          # Collecte GitHub
+    │   ├── scraping_linkedin.py        # Collecte LinkedIn (via Apify)
+    │   ├── scraping_twitter.py         # Collecte Twitter (via Apify)
+    │   └── data/                       # Données brutes collectées
+    │
+    └── matching/                       # Pipeline de matching
+        ├── preprocessing.py            # Nettoyage des données
+        ├── embedding_creator.py        # Génération des embeddings
+        ├── matching_logic.py           # Algorithme de clustering
+        └── output/                     # Fichiers intermédiaires
+```
 
-📋 Contribution
+---
 
-Forkez ce dépôt et clonez-le sur votre machine locale.
+## 🚀 Workflows et Processus
 
-Créez une branche pour votre fonctionnalité (git checkout -b feature/nom-fonctionnalité).
+### Pipeline de Matching (Backend)
 
-Faites vos modifications et testez-les localement.
+```
+1. Collecte → 2. Prétraitement → 3. Embeddings → 4. Clustering → 5. Export JSON
+```
 
-Faites une pull request vers la branche principale avec une description détaillée des modifications.
+**Détails** :
+1. **Collecte** : Récupération des profils via APIs
+2. **Prétraitement** : Normalisation des noms, emails, compétences
+3. **Embeddings** : Conversion du texte en vecteurs sémantiques
+4. **Clustering** : Regroupement des profils similaires
+5. **Export** : Génération du fichier `clusters_3_plateformes.json`
 
-📝 Licences
+### Interface Utilisateur (Frontend)
 
-Ce projet est sous la licence MIT. Pour plus d'informations, consultez le fichier LICENSE.
+```
+Chargement → Recherche/Filtrage → Consultation → Favoris → Export
+```
+
+---
+
+## 🧪 Tests et Validation
+
+### Tests Backend
+```bash
+# Tester le preprocessing
+python -m matching_profiles.matching.preprocessing
+
+# Tester l'embedding
+python -m matching_profiles.matching.embedding_creator
+
+# Pipeline complet
+python matching_profiles/matching/pipeline_orchestrator.py
+```
+
+### Tests Frontend
+```bash
+# Lancer l'application en mode dev
+npm run dev
+
+# Build de production
+npm run build
+npm run preview
+```
+
+---
+
+## 📋 Contribution
+
+Nous accueillons les contributions avec enthousiasme ! Voici comment participer :
+
+1. **Forkez** le dépôt
+2. **Clonez** votre fork :
+   ```bash
+   git clone https://github.com/votre-username/TalentHub.git
+   ```
+3. **Créez une branche** pour votre fonctionnalité :
+   ```bash
+   git checkout -b feature/nom-fonctionnalite
+   ```
+4. **Commitez** vos modifications :
+   ```bash
+   git commit -m "Add: Description de la fonctionnalité"
+   ```
+5. **Pushez** vers votre fork :
+   ```bash
+   git push origin feature/nom-fonctionnalite
+   ```
+6. **Ouvrez une Pull Request** avec une description détaillée
+
+### Bonnes Pratiques
+- ✅ Testez vos modifications localement
+- ✅ Suivez les conventions de code existantes
+- ✅ Documentez les nouvelles fonctionnalités
+- ✅ Ajoutez des tests si nécessaire
+
+---
+
+## 🐛 Résolution des Problèmes
+
+### Erreur : Module non trouvé (Backend)
+```bash
+pip install --upgrade -r requirements_matching.txt
+```
+
+### Erreur : Port 5173 déjà utilisé (Frontend)
+```bash
+# Modifier le port dans vite.config.js
+export default {
+  server: { port: 3000 }
+}
+```
+
+### Fichier clusters_3_plateformes.json manquant
+```bash
+# Relancer le pipeline backend
+```
+
+---
+
+## 📝 Licence
+
+Ce projet est distribué sous la **licence MIT**.  
+
+```
+MIT License
+
+Copyright (c) 2025 TalentHub
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
+
+Pour plus d'informations, consultez le fichier [LICENSE](./LICENSE).
+
+---
+
+
+
+
+---
+
+**⭐ Si ce projet vous est utile, n'hésitez pas à lui donner une étoile sur GitHub !**
